@@ -90,6 +90,10 @@ public class FileSystemLogRepository implements ExecutionLogRepository {
         this(SchedulerSystem.getLogsPath(), dispersionFactor);
     }
 
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
+
     /**
      * {@inheritDoc}
      */
