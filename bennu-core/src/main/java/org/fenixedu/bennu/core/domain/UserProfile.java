@@ -1,6 +1,8 @@
 package org.fenixedu.bennu.core.domain;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -229,19 +231,26 @@ public class UserProfile extends UserProfile_Base {
         return NameIndex.search(name, maxHits);
     }
 
-    private static void validateNames(String displayname, String fullname) {
-        if (displayname == null) {
+    private static void validateNames(String displayName, String fullName) {
+        if (displayName == null) {
             return;
         }
-        if (fullname == null) {
-            throw BennuCoreDomainException.displayNameNotContainedInFullName(displayname, fullname);
+        if (fullName == null) {
+            throw BennuCoreDomainException.displayNameNotContainedInFullName(displayName, fullName);
         }
-        List<String> fullnameParts =
-                Arrays.asList(StringNormalizer.normalizeAndRemoveAccents(fullname).toLowerCase().trim().split("\\s+|-"));
-        List<String> displaynameParts =
-                Arrays.asList(StringNormalizer.normalizeAndRemoveAccents(displayname).toLowerCase().trim().split("\\s+|-"));
-        if (!fullnameParts.containsAll(displaynameParts)) {
-            throw BennuCoreDomainException.displayNameNotContainedInFullName(displayname, fullname);
+        List<String> fullNameParts =
+                Arrays.asList(StringNormalizer.normalizeAndRemoveAccents(fullName).toLowerCase().trim().split("\\s+|-"));
+        List<String> displayNameParts =
+                Arrays.asList(StringNormalizer.normalizeAndRemoveAccents(displayName).toLowerCase().trim().split("\\s+|-"));
+
+        if (!fullNameParts.containsAll(displayNameParts)) {
+            throw BennuCoreDomainException.displayNameNotContainedInFullName(displayName, fullName);
+        }
+
+        for(String name: new HashSet<>(fullNameParts)) {
+            if (Collections.frequency(fullNameParts, name) < Collections.frequency(displayNameParts, name)) {
+                throw BennuCoreDomainException.displayNameNotContainedInFullName(displayName, fullName);
+            }
         }
     }
 
